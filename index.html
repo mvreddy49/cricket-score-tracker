@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Score Tracker - Ball by Ball</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c5530">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-cricket-bat-ball"></i> Cricket Score Tracker</h1>
+                <p>Track your weekly gully cricket matches</p>
+                <div class="demo-controls">
+                    <button onclick="loadDemoData()" class="demo-btn">
+                        <i class="fas fa-magic"></i> Load Demo Data
+                    </button>
+                    <button onclick="clearDemoData()" class="demo-btn-clear">
+                        <i class="fas fa-trash"></i> Clear Data
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('dashboard')">
+                <i class="fas fa-home"></i> Dashboard
+            </button>
+            <button class="tab-btn" onclick="showTab('new-match')">
+                <i class="fas fa-plus"></i> New Match
+            </button>
+            <button class="tab-btn" onclick="showTab('live-score')">
+                <i class="fas fa-play"></i> Live Score
+            </button>
+            <button class="tab-btn" onclick="showTab('history')">
+                <i class="fas fa-history"></i> History
+            </button>
+            <button class="tab-btn" onclick="showTab('stats')">
+                <i class="fas fa-chart-bar"></i> Stats
+            </button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <h3>Total Matches</h3>
+                    <div class="stat-number" id="totalMatches">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Match</h3>
+                    <div class="stat-text" id="activeMatch">None</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Last Winner</h3>
+                    <div class="stat-text" id="lastWinner">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Players</h3>
+                    <div class="stat-number" id="totalPlayers">0</div>
+                </div>
+            </div>
+            
+            <div class="recent-matches">
+                <h3>Recent Matches</h3>
+                <div id="recentMatchesList">
+                    <p class="no-data">No matches played yet. Start by creating a new match!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Match Tab -->
+        <div id="new-match" class="tab-content">
+            <div class="form-container">
+                <h2>Create New Match</h2>
+                <form id="newMatchForm">
+                    <div class="form-group">
+                        <label for="matchName">Match Name</label>
+                        <input type="text" id="matchName" placeholder="e.g., Sunday League Match" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="team1Name">Team 1</label>
+                            <input type="text" id="team1Name" placeholder="Team A" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="team2Name">Team 2</label>
+                            <input type="text" id="team2Name" placeholder="Team B" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="overs">Overs per side</label>
+                            <select id="overs" required>
+                                <option value="6" selected>6 Overs (Quick Match)</option>
+                                <option value="8">8 Overs (Standard Gully)</option>
+                                <option value="10">10 Overs</option>
+                                <option value="12">12 Overs</option>
+                                <option value="15">15 Overs</option>
+                                <option value="20">20 Overs (Full T20)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="matchDate">Match Date</label>
+                            <input type="date" id="matchDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="players-section">
+                        <h3>Team 1 Players (6-11 players) 
+                            <button type="button" onclick="fillTeamWithDemoPlayers('team1Players')" class="quick-fill-btn">Quick Fill</button>
+                        </h3>
+                        <div id="team1Players">
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 1 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 2 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 3 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 4 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 5 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 6 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" onclick="addPlayer('team1Players')" class="add-player-btn">+ Add More Players</button>
+                        
+                        <h3>Team 2 Players (6-11 players)
+                            <button type="button" onclick="fillTeamWithDemoPlayers('team2Players')" class="quick-fill-btn">Quick Fill</button>
+                        </h3>
+                        <div id="team2Players">
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 1 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 2 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 3 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 4 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 5 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                            <div class="player-input">
+                                <input type="text" placeholder="Player 6 name" required>
+                                <button type="button" onclick="removePlayer(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" onclick="addPlayer('team2Players')" class="add-player-btn">+ Add More Players</button>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Create Match</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Live Score Tab -->
+        <div id="live-score" class="tab-content">
+            <div id="noActiveMatch" class="no-data">
+                <p>No active match. Create a new match to start tracking scores.</p>
+            </div>
+            
+            <div id="scoreBoard" class="score-board" style="display: none;">
+                <div class="match-header">
+                    <h2 id="currentMatchName">Match Name</h2>
+                    <div class="match-info">
+                        <span id="currentMatchDate"></span> | <span id="currentMatchOvers"></span> Overs
+                    </div>
+                </div>
+                
+                <div class="teams-score">
+                    <div class="team-score" id="team1Score">
+                        <h3 id="team1NameDisplay">Team 1</h3>
+                        <div class="score">
+                            <span class="runs" id="team1Runs">0</span> / 
+                            <span class="wickets" id="team1Wickets">0</span>
+                        </div>
+                        <div class="overs">(<span id="team1OversBowled">0.0</span> overs)</div>
+                        <div class="extras">Extras: <span id="team1Extras">0</span></div>
+                    </div>
+                    
+                    <div class="vs">VS</div>
+                    
+                    <div class="team-score" id="team2Score">
+                        <h3 id="team2NameDisplay">Team 2</h3>
+                        <div class="score">
+                            <span class="runs" id="team2Runs">0</span> / 
+                            <span class="wickets" id="team2Wickets">0</span>
+                        </div>
+                        <div class="overs">(<span id="team2OversBowled">0.0</span> overs)</div>
+                        <div class="extras">Extras: <span id="team2Extras">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="current-batting" id="currentBatting">
+                    <h4>Currently Batting: <span id="battingTeam">Team 1</span></h4>
+                </div>
+                
+                <div class="score-controls">
+                    <h4>Add Runs</h4>
+                    <div class="run-buttons">
+                        <button onclick="addRuns(0)">0</button>
+                        <button onclick="addRuns(1)">1</button>
+                        <button onclick="addRuns(2)">2</button>
+                        <button onclick="addRuns(3)">3</button>
+                        <button onclick="addRuns(4)" class="boundary">4</button>
+                        <button onclick="addRuns(6)" class="six">6</button>
+                        <button onclick="addWicket()" class="wicket">Wicket</button>
+                        <button onclick="addExtra()" class="extra">Extra</button>
+                    </div>
+                </div>
+                
+                <!-- Ball by Ball Scorecard -->
+                <div class="ball-by-ball-section">
+                    <h4>Ball by Ball Scorecard <span class="scorecard-toggle" onclick="toggleScorecard()">📊 Show/Hide</span></h4>
+                    <div id="ballByBallCard" class="scorecard-container">
+                        <div class="scorecard-tabs">
+                            <button class="scorecard-tab active" onclick="showScorecardTab('current')">Current Innings</button>
+                            <button class="scorecard-tab" onclick="showScorecardTab('previous')">Previous Innings</button>
+                        </div>
+                        <div id="currentInningsCard" class="scorecard-content active">
+                            <div id="currentOversDisplay">
+                                <p class="no-data">No balls bowled yet. Start scoring to see ball-by-ball details!</p>
+                            </div>
+                        </div>
+                        <div id="previousInningsCard" class="scorecard-content">
+                            <div id="previousOversDisplay">
+                                <p class="no-data">Previous innings will appear here after first innings is complete.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="match-controls">
+                    <button onclick="endInnings()" class="btn-secondary">End Innings</button>
+                    <button onclick="finishMatch()" class="btn-primary">Finish Match</button>
+                    <button onclick="resetMatch()" class="btn-danger">Reset Match</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <h2>Match History</h2>
+            <div class="filter-controls">
+                <input type="text" id="searchHistory" placeholder="Search matches..." onkeyup="filterHistory()">
+                <select id="filterByResult" onchange="filterHistory()">
+                    <option value="all">All Matches</option>
+                    <option value="completed">Completed</option>
+                    <option value="abandoned">Abandoned</option>
+                </select>
+            </div>
+            <div id="matchHistory">
+                <p class="no-data">No match history available.</p>
+            </div>
+        </div>
+
+        <!-- Stats Tab -->
+        <div id="stats" class="tab-content">
+            <h2>Statistics</h2>
+            <div class="stats-container">
+                <div class="player-stats">
+                    <h3>Top Performers</h3>
+                    <div id="topPerformers">
+                        <p class="no-data">Play some matches to see statistics!</p>
+                    </div>
+                </div>
+                
+                <div class="team-stats">
+                    <h3>Team Performance</h3>
+                    <div id="teamPerformance">
+                        <p class="no-data">Play some matches to see team statistics!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="extraModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Extra</h3>
+            <div class="extra-buttons">
+                <button onclick="addExtraRuns(1, 'wide')">Wide (1 run)</button>
+                <button onclick="addExtraRuns(1, 'noball')">No Ball (1 run)</button>
+                <button onclick="addExtraRuns(1, 'bye')">Bye (1 run)</button>
+                <button onclick="addExtraRuns(1, 'legbye')">Leg Bye (1 run)</button>
+            </div>
+            <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+
+    <script src="demo-data.js"></script>
+    <script src="google-sheets.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        // Auto-initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('matchDate').value = new Date().toISOString().split('T')[0];
+            quickFillTeam('team1', 'batsmen');
+            quickFillTeam('team2', 'bowlers');
+            if (window.initGoogleSheets) window.initGoogleSheets();
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
