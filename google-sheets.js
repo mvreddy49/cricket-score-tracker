@@ -2,8 +2,8 @@
 // Pre-configured with your Google Sheets credentials
 
 const GOOGLE_CONFIG = {
-    API_KEY: 'AIzaSyB8vrR-gsOj6uAt8pp9qUwpfZ0l9z3ExVI',
-    SHEET_ID: '1r9oZyiQmYox0RywYVoB0NHSkJntZ0sJvvRC5Yj8ElDw',
+    API_KEY: '',
+    SHEET_ID: '',
     SHEET_NAME: 'Sheet1',
     DISCOVERY_DOC: 'https://sheets.googleapis.com/$discovery/rest?version=v4'
 };
@@ -476,5 +476,6 @@ window.addEventListener('load', () => {
         }
     }, 2000);
 });
+
 
 console.log('Google Sheets integration loaded with your credentials');
